@@ -1,0 +1,30 @@
+buildscript {
+    repositories {
+        google()
+        jcenter()
+    }
+
+    dependencies {
+        classpath "com.android.tools.build:gradle:4.2.0"
+        classpath "androidx.benchmark:benchmark-gradle-plugin:1.1.0-alpha01"
+    }
+
+    configurations.classpath {
+        resolutionStrategy.activateDependencyLocking()
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        jcenter()
+    }
+
+    dependencyLocking {
+        lockAllConfigurations()
+    }
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}
