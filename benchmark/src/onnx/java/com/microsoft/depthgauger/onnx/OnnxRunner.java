@@ -31,6 +31,7 @@ public class OnnxRunner extends BaseRunner<OnnxConfig> {
     public void unloadModel() throws Exception {
         if (session != null) {
             session.close();
+            session = null;
         }
     }
 
