@@ -122,7 +122,7 @@ dependencies {
     implementation 'com.google.guava:guava:30.1.1-android'
 
     // Frameworks
-    onnxImplementation project(":onnxruntime-debug")
+    onnxImplementation project(":onnxruntime-release")
     pytorchImplementation 'org.pytorch:pytorch_android:1.8.0'
     tensorflowImplementation 'org.tensorflow:tensorflow-lite:2.4.0'
     tensorflowImplementation 'org.tensorflow:tensorflow-lite-gpu:2.4.0'

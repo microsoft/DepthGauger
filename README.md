@@ -24,7 +24,7 @@ depthgauger_keystore_key_password=...
 
 If you're using Windows, remember to escape your slashes in `depthgauger_keystore_path`.
 
-Add a compiled ONNX Runtime AAR file called `onnxruntime-debug.aar` to the `onnxruntime-debug`
+Add a compiled ONNX Runtime AAR file called `onnxruntime-release.aar` to the `onnxruntime-release`
 directory.
 
 ### Choose a framework to test

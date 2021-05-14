@@ -1,4 +1,4 @@
-include ':onnxruntime-debug'
+include ':onnxruntime-release'
 include ':dummyapp'
 include ':benchmark'
 rootProject.name = "Inference Test"
