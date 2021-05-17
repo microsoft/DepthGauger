@@ -82,6 +82,11 @@ android {
             dimension "framework"
             versionNameSuffix "-tensorflow"
         }
+
+        fluency {
+            dimension "framework"
+            versionNameSuffix "-fluency"
+        }
     }
 
     sourceSets {
@@ -98,6 +103,11 @@ android {
         tensorflow {
             assets.srcDirs = [assetsDir]
             java.srcDirs = ['src/tensorflow/java', 'src/main/java']
+        }
+
+        fluency {
+            assets.srcDirs = [assetsDir]
+            java.srcDirs = ['src/fluency/java', 'src/main/java']
         }
     }
 }
@@ -127,6 +137,7 @@ dependencies {
     tensorflowImplementation 'org.tensorflow:tensorflow-lite:2.4.0'
     tensorflowImplementation 'org.tensorflow:tensorflow-lite-gpu:2.4.0'
     tensorflowImplementation 'org.tensorflow:tensorflow-lite-select-tf-ops:2.4.0'
+    fluencyImplementation project(":fluency")
 }
 
 task deleteAssetsDir(type: Delete) {

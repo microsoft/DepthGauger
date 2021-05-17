@@ -1,4 +1,5 @@
 include ':onnxruntime-release'
+include ':fluency'
 include ':dummyapp'
 include ':benchmark'
 rootProject.name = "Inference Test"
