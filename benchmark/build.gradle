@@ -73,6 +73,11 @@ android {
             versionNameSuffix "-onnx"
         }
 
+        fluency {
+            dimension "framework"
+            versionNameSuffix "-fluency"
+        }
+
         pytorch {
             dimension "framework"
             versionNameSuffix "-pytorch"
@@ -98,6 +103,11 @@ android {
         tensorflow {
             assets.srcDirs = [assetsDir]
             java.srcDirs = ['src/tensorflow/java', 'src/main/java']
+        }
+
+        fluency {
+            assets.srcDirs = [assetsDir]
+            java.srcDirs = ['src/fluency/java', 'src/main/java']
         }
     }
 }
