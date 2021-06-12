@@ -2,7 +2,8 @@ package com.microsoft.depthgauger;
 
 import android.content.Context;
 
-import com.microsoft.depthgauger.utils.TimeStats;
+import com.microsoft.depthgauger.memory.MemoryStats;
+import com.microsoft.depthgauger.utils.Stats;
 
 import java.io.IOException;
 
@@ -19,7 +20,9 @@ public abstract class BaseRunner<T extends BaseConfig> {
 
     public abstract void unloadModel() throws Exception;
 
-    public abstract void loadModel(TimeStats timeStats) throws Exception;
+    public abstract void loadModel(Stats stats, MemoryStats baselineMemoryStats)
+            throws Exception;
 
-    public abstract void call(TimeStats timeStats) throws Exception;
+    public abstract void call(Stats stats, MemoryStats baselineMemoryStats)
+            throws Exception;
 }

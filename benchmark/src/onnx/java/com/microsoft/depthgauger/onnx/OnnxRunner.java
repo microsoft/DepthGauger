@@ -3,7 +3,8 @@ package com.microsoft.depthgauger.onnx;
 import android.content.Context;
 
 import com.microsoft.depthgauger.BaseRunner;
-import com.microsoft.depthgauger.utils.TimeStats;
+import com.microsoft.depthgauger.memory.MemoryStats;
+import com.microsoft.depthgauger.utils.Stats;
 
 import java.util.Map;
 
@@ -36,22 +37,24 @@ public class OnnxRunner extends BaseRunner<OnnxConfig> {
     }
 
     @Override
-    public void loadModel(TimeStats timeStats) throws Exception {
+    public void loadModel(Stats stats, MemoryStats baselineMemoryStats) throws Exception {
         unloadModel();
         final long startLoadingTimeMs = System.currentTimeMillis();
         session = env.createSession(readFileToBytes(modelPath), opts);
         final long loadTimeMs = System.currentTimeMillis() - startLoadingTimeMs;
-        timeStats.appendTimeMs(loadTimeMs);
+        stats.appendTimeMs(loadTimeMs);
+        stats.appendMemoryStats(baselineMemoryStats);
     }
 
     @Override
-    public void call(TimeStats timeStats) throws Exception {
+    public void call(Stats stats, MemoryStats baselineMemoryStats) throws Exception {
         final long startCallTimeMs = System.currentTimeMillis();
         final Map<String, OnnxTensor> inputs = config.getOnnxTensors(env);
         try {
             session.run(inputs);
             final long callTimeMs = System.currentTimeMillis() - startCallTimeMs;
-            timeStats.appendTimeMs(callTimeMs);
+            stats.appendTimeMs(callTimeMs);
+            stats.appendMemoryStats(baselineMemoryStats);
         } finally {
             for (OnnxTensor tensor : inputs.values()) {
                 tensor.close();

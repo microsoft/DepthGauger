@@ -4,7 +4,8 @@ import android.content.Context;
 import android.os.Build;
 
 import com.microsoft.depthgauger.BaseRunner;
-import com.microsoft.depthgauger.utils.TimeStats;
+import com.microsoft.depthgauger.memory.MemoryStats;
+import com.microsoft.depthgauger.utils.Stats;
 
 import org.tensorflow.lite.Interpreter;
 import org.tensorflow.lite.gpu.CompatibilityList;
@@ -50,21 +51,23 @@ public class TensorFlowRunner extends BaseRunner<TensorFlowConfig> {
     }
 
     @Override
-    public void loadModel(TimeStats timeStats) {
+    public void loadModel(Stats stats, MemoryStats baselineMemoryStats) {
         unloadModel();
         final long startLoadingTimeMs = System.currentTimeMillis();
         interpreter = new Interpreter(new File(modelPath), options);
         interpreter.allocateTensors();
         final long loadTimeMs = System.currentTimeMillis() - startLoadingTimeMs;
-        timeStats.appendTimeMs(loadTimeMs);
+        stats.appendTimeMs(loadTimeMs);
+        stats.appendMemoryStats(baselineMemoryStats);
     }
 
     @Override
-    public void call(TimeStats timeStats) {
+    public void call(Stats stats, MemoryStats baselineMemoryStats) {
         final long startCallTimeMs = System.currentTimeMillis();
         runCall(config.getInputs());
         final long callTimeMs = System.currentTimeMillis() - startCallTimeMs;
-        timeStats.appendTimeMs(callTimeMs);
+        stats.appendTimeMs(callTimeMs);
+        stats.appendMemoryStats(baselineMemoryStats);
     }
 
     public Map<Integer, Object> runCall(Object[] inputs) {
@@ -72,13 +75,13 @@ public class TensorFlowRunner extends BaseRunner<TensorFlowConfig> {
         return config.getOutputs();
     }
 
-    public float[][] runCallSingleTimed(TimeStats timeStats) {
+    public float[][] runCallSingleTimed(Stats stats) {
         final float[][] output = new float[1][2];
         final int[][] inputArray = new int[][] {{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63}};
         final long startCallTimeMs = System.currentTimeMillis();
         interpreter.run(inputArray, output);
         final long callTimeMs = System.currentTimeMillis() - startCallTimeMs;
-        timeStats.appendTimeMs(callTimeMs);
+        stats.appendTimeMs(callTimeMs);
         return output;
     }
 

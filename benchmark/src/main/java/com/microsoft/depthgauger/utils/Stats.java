@@ -2,32 +2,35 @@ package com.microsoft.depthgauger.utils;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.microsoft.depthgauger.memory.MemoryStats;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-public class TimeStats {
+import static com.microsoft.depthgauger.memory.MemoryStats.getDiffMemoryStats;
+
+public class Stats {
     private final List<Long> timesMs = new ArrayList<>();
-    private final List<Long> javaMemoryBytes = new ArrayList<>();
-    private final List<Long> nativeMemoryBytes = new ArrayList<>();
+    private final List<Long> javaPss = new ArrayList<>();
+    private final List<Long> nativePss = new ArrayList<>();
     private final int nWarmUpSamples;
     private final String name;
 
-    public TimeStats() {
+    public Stats() {
         this("dummy", 0);
     }
 
-    public TimeStats(String name, int nWarmUpSamples) {
+    public Stats(String name, int nWarmUpSamples) {
         this.name = name;
         this.nWarmUpSamples = nWarmUpSamples;
     }
 
     public void reset() {
         timesMs.clear();
-        javaMemoryBytes.clear();
-        nativeMemoryBytes.clear();
+        javaPss.clear();
+        nativePss.clear();
     }
 
     public String getName() {
@@ -42,36 +45,34 @@ public class TimeStats {
         timesMs.add(ms);
     }
 
-    public void appendJavaMemoryBytes(long bytes) {
-        javaMemoryBytes.add(bytes);
-    }
-
-    public void appendNativeMemoryBytes(long bytes) {
-        nativeMemoryBytes.add(bytes);
+    public void appendMemoryStats(MemoryStats baseline) {
+        final MemoryStats memoryStats = getDiffMemoryStats(baseline);
+        javaPss.add((long) memoryStats.getJavaPss());
+        nativePss.add((long) memoryStats.getNativePss());
     }
 
     public List<Long> getTimesMs() {
         return ImmutableList.copyOf(timesMs);
     }
 
-    public List<Long> getJavaMemoryBytes() {
-        return ImmutableList.copyOf(javaMemoryBytes);
+    public List<Long> getJavaPss() {
+        return ImmutableList.copyOf(javaPss);
     }
 
-    public List<Long> getNativeMemoryBytes() {
-        return ImmutableList.copyOf(nativeMemoryBytes);
+    public List<Long> getNativePss() {
+        return ImmutableList.copyOf(nativePss);
     }
 
-    public Map<String, Double> getTimeStats() {
+    public Map<String, Double> getTimesMsStats() {
         return getStats(timesMs);
     }
 
-    public Map<String, Double> getJavaMemoryStats() {
-        return getStats(javaMemoryBytes);
+    public Map<String, Double> getJavaPssStats() {
+        return getStats(javaPss);
     }
 
-    public Map<String, Double> getNativeMemoryStats() {
-        return getStats(nativeMemoryBytes);
+    public Map<String, Double> getNativePssStats() {
+        return getStats(nativePss);
     }
 
     private Map<String, Double> getStats(List<Long> values) {

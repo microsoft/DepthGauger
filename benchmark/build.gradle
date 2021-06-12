@@ -49,7 +49,7 @@ android {
     }
 
     aaptOptions {
-        noCompress 'ort', 'pt', 'tflite'
+        noCompress 'ort', 'pt', 'tflite', 'zip'
     }
 
     compileOptions {
@@ -119,7 +119,7 @@ dependencies {
     androidTestImplementation 'junit:junit:4.13.2'
 
     // Benchmark
-    androidTestImplementation 'androidx.benchmark:benchmark-junit4:1.1.0-alpha01'
+    androidTestImplementation 'androidx.benchmark:benchmark-junit4:1.1.0-alpha02'
 
     // MS App Center
     androidTestImplementation 'com.microsoft.appcenter:espresso-test-extension:1.4'

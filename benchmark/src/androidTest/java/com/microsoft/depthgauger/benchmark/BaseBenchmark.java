@@ -6,13 +6,17 @@ import androidx.benchmark.junit4.BenchmarkRule;
 import com.microsoft.appcenter.espresso.Factory;
 import com.microsoft.appcenter.espresso.ReportHelper;
 import com.microsoft.depthgauger.BaseRunner;
-import com.microsoft.depthgauger.utils.TimeStats;
+import com.microsoft.depthgauger.memory.MemoryStats;
+import com.microsoft.depthgauger.utils.Stats;
 import com.squareup.moshi.Moshi;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
+
+import static com.microsoft.depthgauger.memory.MemoryStats.getMemoryStats;
 
 abstract class BaseBenchmark<T extends BaseRunner> {
     private static final int N_WARM_UP_SAMPLES = 5;
@@ -24,14 +28,21 @@ abstract class BaseBenchmark<T extends BaseRunner> {
     @Rule
     public ReportHelper reportHelper = Factory.getReportHelper();
 
+    private static MemoryStats baselineMemoryStats;
+
     private T runner;
 
     abstract T getRunner() throws Exception;
 
+    @BeforeClass
+    public static void setUpClass() {
+        baselineMemoryStats = getMemoryStats();
+    }
+
     @Before
     public void setUp() throws Exception {
         runner = getRunner();
-        runner.loadModel(new TimeStats());
+        runner.loadModel(new Stats(), baselineMemoryStats);
     }
 
     @After
@@ -43,34 +54,34 @@ abstract class BaseBenchmark<T extends BaseRunner> {
 
     @Test
     public void loads() throws Exception {
-        final TimeStats loadTimeStats = new TimeStats("loads", N_WARM_UP_SAMPLES);
+        final Stats loadStats = new Stats("loads", N_WARM_UP_SAMPLES);
         final BenchmarkState state = benchmarkRule.getState();
         while (state.keepRunning()) {
             state.pauseTiming();
             runner.unloadModel();
             state.resumeTiming();
-            runner.loadModel(loadTimeStats);
+            runner.loadModel(loadStats, baselineMemoryStats);
         }
         state.pauseTiming();
-        printStats(loadTimeStats);
+        printStats(loadStats);
     }
 
     @Test
     public void calls() throws Exception {
-        final TimeStats callTimeStats = new TimeStats("calls", N_WARM_UP_SAMPLES);
+        final Stats callStats = new Stats("calls", N_WARM_UP_SAMPLES);
         final BenchmarkState state = benchmarkRule.getState();
         while (state.keepRunning()) {
-            runner.call(callTimeStats);
+            runner.call(callStats, baselineMemoryStats);
         }
         state.pauseTiming();
-        printStats(callTimeStats);
+        printStats(callStats);
     }
 
-    static void printStats(TimeStats timeStats) {
+    static void printStats(Stats stats) {
         final String json = new Moshi.Builder()
                 .build()
                 .adapter(BenchmarkStats.class)
-                .toJson(BenchmarkStats.fromTimeStats(timeStats));
+                .toJson(BenchmarkStats.fromStats(stats));
         System.out.println(String.format("DepthGauger stats: %s", json));
     }
 }
