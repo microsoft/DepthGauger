@@ -3,7 +3,8 @@ package com.microsoft.depthgauger.pytorch;
 import android.content.Context;
 
 import com.microsoft.depthgauger.BaseRunner;
-import com.microsoft.depthgauger.utils.TimeStats;
+import com.microsoft.depthgauger.memory.MemoryStats;
+import com.microsoft.depthgauger.utils.Stats;
 
 import org.pytorch.Module;
 
@@ -24,19 +25,21 @@ public class PyTorchRunner extends BaseRunner<PyTorchConfig> {
     }
 
     @Override
-    public void loadModel(TimeStats timeStats) {
+    public void loadModel(Stats stats, MemoryStats baselineMemoryStats) {
         unloadModel();
         final long startLoadingTimeMs = System.currentTimeMillis();
         module = Module.load(modelPath);
         final long loadTimeMs = System.currentTimeMillis() - startLoadingTimeMs;
-        timeStats.appendTimeMs(loadTimeMs);
+        stats.appendTimeMs(loadTimeMs);
+        stats.appendMemoryStats(baselineMemoryStats);
     }
 
     @Override
-    public void call(TimeStats timeStats) {
+    public void call(Stats stats, MemoryStats baselineMemoryStats) {
         final long startCallTimeMs = System.currentTimeMillis();
         module.runMethod(config.getMethodName(), config.getIValues());
         final long callTimeMs = System.currentTimeMillis() - startCallTimeMs;
-        timeStats.appendTimeMs(callTimeMs);
+        stats.appendTimeMs(callTimeMs);
+        stats.appendMemoryStats(baselineMemoryStats);
     }
 }

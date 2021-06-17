@@ -1,13 +1,12 @@
 package com.microsoft.depthgauger.fluency;
 
+import com.microsoft.depthgauger.memory.MemoryStats;
+import com.microsoft.depthgauger.BaseRunner;
+import com.microsoft.depthgauger.utils.Stats;
+import static com.microsoft.depthgauger.utils.IOUtils.readFileToBytes;
 import android.content.Context;
 
-import com.microsoft.depthgauger.BaseRunner;
-import com.microsoft.depthgauger.utils.TimeStats;
-
 import java.util.Map;
-
-import static com.microsoft.depthgauger.utils.IOUtils.readFileToBytes;
 
 public class FluencyRunner extends BaseRunner<FluencyConfig> {
     private long handle;
@@ -34,7 +33,7 @@ public class FluencyRunner extends BaseRunner<FluencyConfig> {
     }
 
     @Override
-    public void loadModel(TimeStats timeStats) throws Exception {
+    public void loadModel(Stats stats, MemoryStats baselineMemoryStats) throws Exception {
         unloadModel();
         final long startLoadingTimeMs = System.currentTimeMillis();
         this.handle = Load(modelPath);
@@ -42,11 +41,12 @@ public class FluencyRunner extends BaseRunner<FluencyConfig> {
             throw new Exception("Failed to load Fluency lm");
         }
         final long loadTimeMs = System.currentTimeMillis() - startLoadingTimeMs;
-        timeStats.appendTimeMs(loadTimeMs);
+        stats.appendTimeMs(loadTimeMs);
+        stats.appendMemoryStats(baselineMemoryStats);
     }
 
     @Override
-    public void call(TimeStats timeStats) throws Exception {
+    public void call(Stats stats, MemoryStats baselineMemoryStats) throws Exception {
         final long startCallTimeMs = System.currentTimeMillis();
         final Map<String, long[]> inputs = config.getFluencyTensors();
         if (!inputs.containsKey("ids")) {
@@ -55,6 +55,7 @@ public class FluencyRunner extends BaseRunner<FluencyConfig> {
         final long[] ids = inputs.get("ids");
         Predict(this.handle, ids);
         final long callTimeMs = System.currentTimeMillis() - startCallTimeMs;
-        timeStats.appendTimeMs(callTimeMs);
+        stats.appendTimeMs(callTimeMs);
+        stats.appendMemoryStats(baselineMemoryStats);
     }
 }
