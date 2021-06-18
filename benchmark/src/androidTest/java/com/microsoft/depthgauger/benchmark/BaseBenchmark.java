@@ -84,6 +84,15 @@ abstract class BaseBenchmark<T extends BaseRunner> {
                 .build()
                 .adapter(BenchmarkStats.class)
                 .toJson(BenchmarkStats.fromStats(stats));
-        Log.i("DepthGauger", String.format("DepthGauger stats (%s): %s", testPhase, json));
+        largeLog("DepthGauger", String.format("DepthGauger stats (%s): %s", testPhase, json));
+    }
+
+    public static void largeLog(String tag, String content) {
+        if (content.length() > 3500) {
+            Log.i(tag, content.substring(0, 3500));
+            largeLog(tag, content.substring(3500));
+        } else {
+            Log.i(tag, content);
+        }
     }
 }
