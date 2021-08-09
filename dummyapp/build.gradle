@@ -22,10 +22,10 @@ android {
 
     signingConfigs {
         release {
-            storeFile file(depthgauger_keystore_path)
-            storePassword depthgauger_keystore_password
-            keyAlias depthgauger_keystore_key_alias
-            keyPassword depthgauger_keystore_key_password
+            storeFile file(String.valueOf(System.getenv("KEYSTORE")))
+            storePassword System.getenv("APPCENTER_KEYSTORE_PASSWORD")
+            keyAlias System.getenv("APPCENTER_KEY_ALIAS")
+            keyPassword System.getenv("APPCENTER_KEY_PASSWORD")
         }
     }
 
