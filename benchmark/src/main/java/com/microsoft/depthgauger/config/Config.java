@@ -36,6 +36,7 @@ public class Config {
                         .withSubtype(LongFlatTensorConstantParameter.class, LongFlatTensorConstantParameter.class.getSimpleName()))*/
                 .build();
         final JsonAdapter<Config> jsonAdapter = moshi.adapter(Config.class);
-        return jsonAdapter.fromJson(configJson);
+
+        return jsonAdapter.lenient().fromJson(configJson);
     }
 }
